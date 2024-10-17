@@ -24,6 +24,7 @@ public class MagicLinkResource extends AbstractAdminResource {
 	}
 
 	@POST
+	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public MagicLinkResponse createMagicLink(final MagicLinkRequest rep) {
