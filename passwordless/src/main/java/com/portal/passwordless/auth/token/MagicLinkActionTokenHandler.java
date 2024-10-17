@@ -20,86 +20,86 @@ import org.slf4j.LoggerFactory;
 
 public class MagicLinkActionTokenHandler extends AbstractActionTokenHandler<MagicLinkActionToken> {
 
-    private static final Logger log = LoggerFactory.getLogger(MagicLinkActionTokenHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(MagicLinkActionTokenHandler.class);
 
-    public MagicLinkActionTokenHandler() {
-        super(
-                MagicLinkActionToken.TOKEN_TYPE,
-                MagicLinkActionToken.class,
-                Messages.INVALID_REQUEST,
-                EventType.EXECUTE_ACTION_TOKEN,
-                Errors.INVALID_REQUEST);
-    }
+	public MagicLinkActionTokenHandler() {
+		super(
+				MagicLinkActionToken.TOKEN_TYPE,
+				MagicLinkActionToken.class,
+				Messages.INVALID_REQUEST,
+				EventType.EXECUTE_ACTION_TOKEN,
+				Errors.INVALID_REQUEST);
+	}
 
-    @Override
-    public AuthenticationSessionModel startFreshAuthenticationSession(
-            MagicLinkActionToken token, ActionTokenContext<MagicLinkActionToken> tokenContext) {
-        return tokenContext.createAuthenticationSessionForClient(token.getIssuedFor());
-    }
+	@Override
+	public AuthenticationSessionModel startFreshAuthenticationSession(
+			MagicLinkActionToken token, ActionTokenContext<MagicLinkActionToken> tokenContext) {
+		return tokenContext.createAuthenticationSessionForClient(token.getIssuedFor());
+	}
 
-    @Override
-    public boolean canUseTokenRepeatedly(
-            MagicLinkActionToken token, ActionTokenContext<MagicLinkActionToken> tokenContext) {
-        return token
-                .getActionTokenPersistent(); // Invalidate action token after one use if configured to do so
-    }
+	@Override
+	public boolean canUseTokenRepeatedly(
+			MagicLinkActionToken token, ActionTokenContext<MagicLinkActionToken> tokenContext) {
+		return token
+				.getActionTokenPersistent(); // Invalidate action token after one use if configured to do so
+	}
 
-    @Override
-    public Response handleToken(MagicLinkActionToken token, ActionTokenContext<MagicLinkActionToken> tokenContext) {
-        log.info("handleToken for iss: {}, user: {}", token.getIssuedFor(), token.getUserId());
-        UserModel user = tokenContext.getAuthenticationSession().getAuthenticatedUser();
+	@Override
+	public Response handleToken(MagicLinkActionToken token, ActionTokenContext<MagicLinkActionToken> tokenContext) {
+		log.info("handleToken for iss: {}, user: {}", token.getIssuedFor(), token.getUserId());
+		UserModel user = tokenContext.getAuthenticationSession().getAuthenticatedUser();
 
-        final AuthenticationSessionModel authSession = tokenContext.getAuthenticationSession();
-        final ClientModel client = authSession.getClient();
-        final String redirectUri =
-                token.getRedirectUri() != null
-                        ? token.getRedirectUri()
-                        : ResolveRelative.resolveRelativeUri(
-                        tokenContext.getSession(), client.getRootUrl(), client.getBaseUrl());
-        log.info("Using redirect_uri {}", redirectUri);
+		final AuthenticationSessionModel authSession = tokenContext.getAuthenticationSession();
+		final ClientModel client = authSession.getClient();
+		final String redirectUri =
+				token.getRedirectUri() != null
+						? token.getRedirectUri()
+						: ResolveRelative.resolveRelativeUri(
+						tokenContext.getSession(), client.getRootUrl(), client.getBaseUrl());
+		log.info("Using redirect_uri {}", redirectUri);
 
-        String redirect =
-                RedirectUtils.verifyRedirectUri(
-                        tokenContext.getSession(), redirectUri, authSession.getClient());
-        if (redirect != null) {
-            authSession.setAuthNote(
-                    AuthenticationManager.SET_REDIRECT_URI_AFTER_REQUIRED_ACTIONS, "true");
-            authSession.setRedirectUri(redirect);
-            authSession.setClientNote(OIDCLoginProtocol.REDIRECT_URI_PARAM, redirectUri);
-            if (token.getState() != null) {
-                authSession.setClientNote(OIDCLoginProtocol.STATE_PARAM, token.getState());
-            }
-            if (token.getNonce() != null) {
-                authSession.setClientNote(OIDCLoginProtocol.NONCE_PARAM, token.getNonce());
-                authSession.setUserSessionNote(OIDCLoginProtocol.NONCE_PARAM, token.getNonce());
-            }
-        }
+		String redirect =
+				RedirectUtils.verifyRedirectUri(
+						tokenContext.getSession(), redirectUri, authSession.getClient());
+		if (redirect != null) {
+			authSession.setAuthNote(
+					AuthenticationManager.SET_REDIRECT_URI_AFTER_REQUIRED_ACTIONS, "true");
+			authSession.setRedirectUri(redirect);
+			authSession.setClientNote(OIDCLoginProtocol.REDIRECT_URI_PARAM, redirectUri);
+			if (token.getState() != null) {
+				authSession.setClientNote(OIDCLoginProtocol.STATE_PARAM, token.getState());
+			}
+			if (token.getNonce() != null) {
+				authSession.setClientNote(OIDCLoginProtocol.NONCE_PARAM, token.getNonce());
+				authSession.setUserSessionNote(OIDCLoginProtocol.NONCE_PARAM, token.getNonce());
+			}
+		}
 
-        if (token.getScope() != null) {
-            authSession.setClientNote(OAuth2Constants.SCOPE, token.getScope());
-            AuthenticationManager.setClientScopesInSession(authSession);
-        }
+		if (token.getScope() != null) {
+			authSession.setClientNote(OAuth2Constants.SCOPE, token.getScope());
+			AuthenticationManager.setClientScopesInSession(authSession);
+		}
 
-        if (token.getRememberMe() != null && token.getRememberMe()) {
-            authSession.setAuthNote(Details.REMEMBER_ME, "true");
-            tokenContext.getEvent().detail(Details.REMEMBER_ME, "true");
-        } else {
-            authSession.removeAuthNote(Details.REMEMBER_ME);
-        }
+		if (token.getRememberMe() != null && token.getRememberMe()) {
+			authSession.setAuthNote(Details.REMEMBER_ME, "true");
+			tokenContext.getEvent().detail(Details.REMEMBER_ME, "true");
+		} else {
+			authSession.removeAuthNote(Details.REMEMBER_ME);
+		}
 
-        user.setEmailVerified(true);
+		user.setEmailVerified(true);
 
-        String nextAction =
-                AuthenticationManager.nextRequiredAction(
-                        tokenContext.getSession(),
-                        authSession,
-                        tokenContext.getRequest(),
-                        tokenContext.getEvent());
-        return AuthenticationManager.redirectToRequiredActions(
-                tokenContext.getSession(),
-                tokenContext.getRealm(),
-                authSession,
-                tokenContext.getUriInfo(),
-                nextAction);
-    }
+		String nextAction =
+				AuthenticationManager.nextRequiredAction(
+						tokenContext.getSession(),
+						authSession,
+						tokenContext.getRequest(),
+						tokenContext.getEvent());
+		return AuthenticationManager.redirectToRequiredActions(
+				tokenContext.getSession(),
+				tokenContext.getRealm(),
+				authSession,
+				tokenContext.getUriInfo(),
+				nextAction);
+	}
 }

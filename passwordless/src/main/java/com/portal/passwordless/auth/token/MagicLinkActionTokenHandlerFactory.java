@@ -8,30 +8,30 @@ import org.keycloak.models.KeycloakSessionFactory;
 
 public class MagicLinkActionTokenHandlerFactory implements ActionTokenHandlerFactory<MagicLinkActionToken> {
 
-    public static final String PROVIDER_ID = "ext-magic-link";
+	public static final String PROVIDER_ID = "ext-magic-link";
 
-    @Override
-    public ActionTokenHandler<MagicLinkActionToken> create(KeycloakSession keycloakSession) {
-        return new MagicLinkActionTokenHandler();
-    }
+	@Override
+	public ActionTokenHandler<MagicLinkActionToken> create(KeycloakSession keycloakSession) {
+		return new MagicLinkActionTokenHandler();
+	}
 
-    @Override
-    public void init(Config.Scope scope) {
+	@Override
+	public void init(Config.Scope scope) {
 
-    }
+	}
 
-    @Override
-    public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
+	@Override
+	public void postInit(KeycloakSessionFactory keycloakSessionFactory) {
 
-    }
+	}
 
-    @Override
-    public void close() {
+	@Override
+	public void close() {
 
-    }
+	}
 
-    @Override
-    public String getId() {
-        return PROVIDER_ID;
-    }
+	@Override
+	public String getId() {
+		return PROVIDER_ID;
+	}
 }
