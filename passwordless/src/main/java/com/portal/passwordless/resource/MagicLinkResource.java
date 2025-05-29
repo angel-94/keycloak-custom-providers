@@ -34,9 +34,8 @@ public class MagicLinkResource extends AbstractAdminResource {
 		if (client == null)
 			throw new NotFoundException(String.format("Client with ID %s not found.", rep.getClientId()));
 
-		if (!MagicLink.validateRedirectUri(session, rep.getRedirectUri(), client))
-			throw new BadRequestException(
-					String.format("redirectUri %s disallowed by client.", rep.getRedirectUri()));
+		if (client.getRedirectUris() == null && !client.getRedirectUris().isEmpty())
+			throw new NotFoundException(String.format("Redirect uris was not found %s.", rep.getClientId()));
 
 		String emailOrUsername = rep.getEmail();
 		boolean sendEmail = rep.isSendEmail();
@@ -57,11 +56,12 @@ public class MagicLinkResource extends AbstractAdminResource {
 					String.format(
 							"User with email/username %s not found, and forceCreate is off.", emailOrUsername));
 
+		String firstRedirectUri = client.getRedirectUris().iterator().next();
 		MagicLinkActionToken token =
 				MagicLink.createActionToken(
 						user,
 						rep.getClientId(),
-						rep.getRedirectUri(),
+						firstRedirectUri,
 						OptionalInt.of(rep.getExpirationSeconds()),
 						rep.getScope(),
 						rep.getNonce(),
