@@ -100,8 +100,8 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
         long millis = seconds * 1000L;
         Date fecha = new Date(millis);
 
-        SimpleDateFormat sdfFecha = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", new Locale("es", "MX"));
-        sdfFecha.setTimeZone(TimeZone.getTimeZone("America/Mexico_City"));
+        SimpleDateFormat sdfFecha = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", new Locale("es", "CO"));
+        sdfFecha.setTimeZone(TimeZone.getTimeZone("America/Bogota"));
 
         return sdfFecha.format(fecha);
     }
@@ -111,8 +111,8 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
         long millis = seconds * 1000L;
         Date fecha = new Date(millis);
 
-        SimpleDateFormat sdfHora = new SimpleDateFormat("HH:mm:ss", new Locale("es", "MX"));
-        sdfHora.setTimeZone(TimeZone.getTimeZone("America/Mexico_City"));
+        SimpleDateFormat sdfHora = new SimpleDateFormat("HH:mm:ss", new Locale("es", "CO"));
+        sdfHora.setTimeZone(TimeZone.getTimeZone("America/Bogota"));
 
         return sdfHora.format(fecha);
     }
