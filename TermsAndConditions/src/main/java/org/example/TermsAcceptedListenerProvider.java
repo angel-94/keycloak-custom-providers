@@ -85,7 +85,7 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
                     .setUser(user);
 
             emailProvider.send(
-                    "Términos y condiciones aceptados",
+                    "Super Puntos: Aceptaste los T&C del programa",
                     "email-terms.ftl",
                     attributes
             );
