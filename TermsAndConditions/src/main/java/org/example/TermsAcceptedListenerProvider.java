@@ -13,10 +13,6 @@ import org.keycloak.email.EmailTemplateProvider;
 import org.keycloak.theme.Theme;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import java.net.URL;
 import java.util.*;
 
@@ -35,6 +31,9 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
         if (event == null || event.getUserId() == null || event.getRealmId() == null) return;
 
         logger.infof("Evento detectado: %s", event.getType());
+
+        String clientId = event.getClientId();
+        if (!clientId.equals("super-rewards-derco-app") && !clientId.equals("82bb86b9-6e7e-40b0-8df3-c8f0ce4fbcc2")) return;
 
         if (event.getType() == EventType.EXECUTE_ACTIONS || event.getType() == EventType.UPDATE_PROFILE || event.getType() == EventType.CODE_TO_TOKEN) {
             RealmModel realm = session.realms().getRealm(event.getRealmId());
