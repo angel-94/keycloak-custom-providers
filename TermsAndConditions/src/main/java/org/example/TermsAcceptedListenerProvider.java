@@ -12,12 +12,17 @@ import org.keycloak.email.EmailException;
 import org.keycloak.email.EmailTemplateProvider;
 import org.keycloak.theme.Theme;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import java.text.SimpleDateFormat;
 import java.net.URL;
 import java.util.*;
 
 public class TermsAcceptedListenerProvider implements EventListenerProvider{
 
+    private static final String RELATIVE_LOG_PATH = "../logs/notification-log.txt";
     private static final Logger logger = Logger.getLogger(TermsAcceptedListenerProvider.class);
     private final KeycloakSession session;
     private final Set<String> notifiedUsers = new HashSet<>();
@@ -89,6 +94,8 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
                     attributes
             );
 
+            writeLog(userEmail, businessName, date, hour);
+
         } catch (Exception e) {
             logger.error("Error al enviar el correo de notificación", e);
         }
@@ -114,6 +121,32 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
         sdfHora.setTimeZone(TimeZone.getTimeZone("America/Bogota"));
 
         return sdfHora.format(fecha);
+    }
+
+    public void writeLog(String userEmail, String bussinesName, String date, String hour) {
+        try {
+            File logFile = new File(RELATIVE_LOG_PATH);
+
+            if (!logFile.exists()) {
+                logFile.getParentFile().mkdirs();
+                logFile.createNewFile();
+            }
+
+            try (FileWriter writer = new FileWriter(logFile, true)) {
+                String timestamp = String.format("%s %s", date, hour);
+                String logLine = String.format(
+                        "[%s] NOTIFICACIÓN → Usuario: %s | Business: %s | Acción: Aceptó términos y condiciones → Notificación enviada.%n",
+                        timestamp, userEmail, bussinesName
+                );
+                writer.write(logLine);
+            }
+
+        } catch (IOException e) {
+            String messageError = String.format(
+                    "Ocurrió un error al registrar el log de notificación para el usuario %s.", userEmail
+            );
+            logger.error(messageError, e);
+        }
     }
 
 
