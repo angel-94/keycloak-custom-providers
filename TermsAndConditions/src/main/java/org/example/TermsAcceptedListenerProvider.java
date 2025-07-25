@@ -73,7 +73,7 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
         Map<String, Object> attributes = new HashMap<>();
         try {
             String fullName = user.getFirstName() + " " + user.getLastName();
-            String businessName = user.getFirstAttribute("businessName");
+            // String businessName = user.getFirstAttribute("businessName");
             String date = transformDate(timestamp);
             String hour = getHour(timestamp);
             String userEmail = user.getEmail();
@@ -81,7 +81,7 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
             attributes.put("full_name", fullName);
             attributes.put("date", date);
             attributes.put("hour", hour);
-            attributes.put("concessionaire", businessName);
+            // attributes.put("concessionaire", businessName);
             attributes.put("user_email", userEmail);
 
             EmailTemplateProvider emailProvider = session.getProvider(EmailTemplateProvider.class)
@@ -94,7 +94,7 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
                     attributes
             );
 
-            writeLog(userEmail, businessName, date, hour);
+            writeLog(userEmail, date, hour);
 
         } catch (Exception e) {
             logger.error("Error al enviar el correo de notificación", e);
@@ -123,7 +123,7 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
         return sdfHora.format(fecha);
     }
 
-    public void writeLog(String userEmail, String bussinesName, String date, String hour) {
+    public void writeLog(String userEmail, String date, String hour) {
         try {
             File logFile = new File(RELATIVE_LOG_PATH);
 
@@ -135,8 +135,8 @@ public class TermsAcceptedListenerProvider implements EventListenerProvider{
             try (FileWriter writer = new FileWriter(logFile, true)) {
                 String timestamp = String.format("%s %s", date, hour);
                 String logLine = String.format(
-                        "[%s] NOTIFICACIÓN → Usuario: %s | Business: %s | Acción: Aceptó términos y condiciones → Notificación enviada.%n",
-                        timestamp, userEmail, bussinesName
+                        "[%s] NOTIFICACIÓN → Usuario: %s | Acción: Aceptó términos y condiciones → Notificación enviada.%n",
+                        timestamp, userEmail
                 );
                 writer.write(logLine);
             }
