@@ -47,12 +47,6 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
         if (EventType.LOGIN.equals(event.getType())) {
 
             try{
-
-                logger.infof("Imprimiendo variables de ambiente");
-                logger.infof(keycloakBaseUrl);
-                logger.infof(clientIdService);
-                logger.infof(clientSecretService);
-
                 String userId = event.getUserId();
 
                 Instant lastLogin = Instant.now();
