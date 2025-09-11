@@ -1,4 +1,4 @@
-export VERSION=1.0.9
+export VERSION=2.0.0
 
-podman build -t djljuarez/keycloak-providers:$VERSION .
-podman push djljuarez/keycloak-providers:$VERSION
+docker build -t djljuarez/keycloak-providers:$VERSION .
+docker push djljuarez/keycloak-providers:$VERSION

@@ -3,3 +3,4 @@ RUN mkdir custom-providers
 WORKDIR custom-providers
 ADD ./passwordless/build/libs/passwordless-0.0.1-SNAPSHOT-plain.jar /custom-providers/passwordless-0.0.1-SNAPSHOT-plain.jar
 ADD ./TermsAndConditions/target/TermsAndConditions-1.0-SNAPSHOT.jar /custom-providers/TermsAndConditions-1.0-SNAPSHOT.jar
+ADD ./SessionKeycloakListener/target/SessionKeycloakListener-1.0-SNAPSHOT.jar /custom-providers/SessionKeycloakListener-1.0-SNAPSHOT.jar
