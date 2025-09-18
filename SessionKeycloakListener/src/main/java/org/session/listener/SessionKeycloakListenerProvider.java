@@ -23,6 +23,7 @@ import org.session.listener.model.LoginRecord;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static java.net.http.HttpClient.*;
 
@@ -74,11 +75,18 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
                 );
 
                 Map<String, Object> payload = SessionUserMapper.toSnakeCase(record);
-                String access_token = generateToken(realmName);
 
-                sendInformation(access_token, payload);
-            } catch (IOException | InterruptedException e) {
-                logger.error("Ha ocurrido un error");
+                // Asincronía para evitar deadlock
+                CompletableFuture.runAsync(() -> {
+                   try{
+                       String access_token = generateToken(realmName);
+                       sendInformation(access_token, payload);
+                   } catch (Exception e){
+                       logger.error("Error en el proceso asíncrono del SPI", e);
+                   }
+                });
+            } catch (Exception e) {
+                logger.error("Ha ocurrido un error en onEvent", e);
                 throw new RuntimeException(e);
             }
 
