@@ -35,6 +35,7 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
     private static final String keycloakBaseUrl = System.getenv("KEYCLOAK_BASE_URL");
     private static final String clientIdService = System.getenv("CLIENT_ID");
     private static final String clientSecretService = System.getenv("CLIENT_SECRET");
+    private static final String apiUserHost = System.getenv("API_USER_HOST");
 
 
     public ObjectMapper mapper = new ObjectMapper();
