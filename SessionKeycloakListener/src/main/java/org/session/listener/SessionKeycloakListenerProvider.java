@@ -143,7 +143,8 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
 
         logger.infof(jsonPayload);
 
-        String endpointUrl = "https://phx-api.sucrimsoft.com/users/api/v1/session/details/user";
+        // String endpointUrl = "https://phx-api.sucrimsoft.com/users/api/v1/session/details/user";
+        String endpointUrl = apiUserHost + "/users/api/v1/session/details/user";
 
         HttpClient client = newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
