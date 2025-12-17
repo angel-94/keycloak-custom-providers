@@ -49,10 +49,10 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
         if (EventType.LOGIN.equals(event.getType())) {
 
             try{
-                String userId = event.getUserId();
+                logger.info("Evento login capturado");
 
+                String userId = event.getUserId();
                 Instant lastLogin = Instant.now();
-                // LocalDateTime lastLoginForDB = LocalDateTime.ofInstant(lastLogin, ZoneOffset.UTC);
                 ZonedDateTime lastLoginMexico = lastLogin.atZone(ZoneId.of("America/Mexico_City"));
                 String lastLoginStr = lastLoginMexico.toOffsetDateTime().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
@@ -81,6 +81,7 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
                 CompletableFuture.runAsync(() -> {
                    try{
                        String access_token = generateToken(realmName);
+                       logger.debug("Token generado exitosamente");
                        sendInformation(access_token, payload);
                    } catch (Exception e){
                        logger.error("Error en el proceso asíncrono del SPI", e);
@@ -90,23 +91,11 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
                 logger.error("Ha ocurrido un error en onEvent", e);
                 throw new RuntimeException(e);
             }
-
         }
     }
 
-
-    @Override
-    public void onEvent(AdminEvent event, boolean includeRepresentation) {
-            System.out.println("Hola");
-    }
-
-    @Override
-    public void close() {
-
-    }
-
     public static String generateToken(String realm) throws IOException, InterruptedException {
-
+        logger.info("Iniciando la generación de token");
         String tokenUrl = (keycloakBaseUrl.endsWith("/") ? keycloakBaseUrl : keycloakBaseUrl + "/")
                 + "realms/" + realm + "/protocol/openid-connect/token";
 
@@ -139,12 +128,13 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
     }
 
     public void sendInformation(String token, Map<String, Object> payload) throws IOException, InterruptedException {
+        logger.infof("Inicio del proceso sendInformation");
         String jsonPayload = mapper.writeValueAsString(payload);
 
         logger.infof(jsonPayload);
 
-        // String endpointUrl = "https://phx-api.sucrimsoft.com/users/api/v1/session/details/user";
         String endpointUrl = apiUserHost + "/users/api/v1/session/details/user";
+        logger.debug("Endpoint URL:" + endpointUrl);
 
         HttpClient client = newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -155,6 +145,11 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        int statusCode = response.statusCode();
+
+        if (statusCode >= 500)
+            logger.warn("Error al consumir API de usuarios. Status: " + statusCode + " Response: " + response.body());
 
         logger.infof("Response status -> " + String.valueOf(response.statusCode()));
     }
