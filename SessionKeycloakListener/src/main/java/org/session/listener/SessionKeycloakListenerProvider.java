@@ -153,4 +153,14 @@ public class SessionKeycloakListenerProvider implements EventListenerProvider{
 
         logger.infof("Response status -> " + String.valueOf(response.statusCode()));
     }
+
+    @Override
+    public void close() {
+        
+    }
+
+    @Override
+    public void onEvent(AdminEvent event, boolean includeRepresentation) {
+        
+    }
 }
